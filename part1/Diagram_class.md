@@ -49,12 +49,11 @@ direction TB
     class Review {+ place_id : UUID4
     + user_id : UUID4
     + rating: integrer
-    + 
-    
-    comments : string
+    +comments : string
     list_by_place()
     list_by_user()
     }
+
     class Amenity {-description : string
     -name : string}
 
