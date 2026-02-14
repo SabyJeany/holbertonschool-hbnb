@@ -27,8 +27,8 @@ direction TB
         + hash_password()
         + verify_password()
         - verify_password()
-        -verify_email()
-        +get_average_rating()
+        - verify_email()
+        + get_average_rating()
 
         
     }
@@ -36,7 +36,7 @@ direction TB
     class Place {
         - owner_id: UUID4
         + name : string 
-        + description: string
+        + description : string
         + price : float
         + latidute : float
         + longitude : float
@@ -48,12 +48,13 @@ direction TB
         + get_average_rating()
     }
     
-    class Review {+ place_id : UUID4
+    class Review {
+    + place_id : UUID4
     + user_id : UUID4
-    + rating: integrer
-    +comments : string
-    list_by_place()
-    list_by_user()
+    + rating : integrer
+    + comments : string
+    + list_by_place()
+    + list_by_user()
     }
 
     class Amenity {-description : string
