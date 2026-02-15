@@ -1,13 +1,14 @@
 ```mermaid
 sequenceDiagram
+autonumber
 
-participant Client as User (Client)
-participant API as API/Facade
-participant User as User Entity
-participant Place as Place Entity 
-participant Amenity as Amenity Entity
-participant BaseModel as BaseModel 
-participant DB as Database 
+participant Client as User 
+participant API as API/Facade (PrésentationLayer)
+participant User as User Entity (BusinessLogicLayer)
+participant Place as Place Entity (BusinessLogicLayer)
+participant Amenity as Amenity Entity (BusinessLogicLayer)
+participant BaseModel as BaseModel (BusinessLogicLayer)
+participant DB as Database (PersistenceLayer)
 
 Client->>API: POST /places (token, name, description, price, latitude, longitude, amenities)
 API->>API: Extract user_id from token
