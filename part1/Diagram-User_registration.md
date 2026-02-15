@@ -8,17 +8,17 @@ autonumber
  participant BaseModel as BaseModel (BusinessLogicLayer)
  participant DB as Database (PersistenceLayer)
 
-Client->>API: POST /register (email, password, first_name, last_name)
-API->>API: Validate input data
+ Client->>API: POST /register (email, password, first_name, last_name)
+ API->>API: Validate input data
 
-API->>User: verify_email(email) 
-User->>DB: Check if email exists
+ API->>User: verify_email(email) 
+ User->>DB: Check if email exists
 
-alt Email already exists
-    DB-->>User: Email found
-    User-->>API: False 
-    API-->>Client: 400 Bad Request (Email already registered) 
-else Email is unique DB-->>User: Email not found 
+ alt Email already exists
+     DB-->>User: Email found
+     User-->>API: False 
+     API-->>Client: 400 Bad Request (Email already registered) 
+ else Email is unique DB-->>User: Email not found 
     User-->>API: True 
     API->>User: create new User instance 
     User->>User: hash_password(password) 
