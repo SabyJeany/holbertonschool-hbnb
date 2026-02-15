@@ -25,4 +25,4 @@ classDiagram
     }
     
     PresentationLayer --> BusinessLogicLayer : Facade Pattern
-    BusinessLogicLayer --> PersistenceLayer : CRUD Operations
+    BusinessLogicLayer --> PersistenceLayer : Storage Operations
