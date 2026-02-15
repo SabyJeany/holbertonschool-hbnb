@@ -3,29 +3,30 @@
 sequenceDiagram
 autonumber
 
-participant Client as review 
-participant API as API/Facade
-participant User as User
-participant Place as Place
-participant Review as Review
-participant DB as Database
+    participant Client as review 
+    participant API as API/Facade
+    participant User as User
+    participant Place as Place
+    participant Review as Review
+    participant DB as Database
 
-Client->>API: POST /places/{place_id}/reviews (token, rating, comments)
+    Client->>API: POST /places/{place_id}/reviews (token, rating, comments)
 
-API->>User: verify_password(token)
-alt Token invalide
-  User-->>API: ERROR
-  API-->>Client: 401 Unauthorized
-else Token valide
-  User-->>API: OK (user_id)
+    API->>User: verify_password(token)
+    alt Token invalide
+        User-->>API: ERROR
+        API-->>Client: 401 Unauthorized
+    else Token valide
+    User-->>API: OK (user_id)
 
-  API->>Place: check_exists(place_id)
-  Place->>DB: SELECT place
-  alt Place not found
-    DB-->>Place: not found
-    Place-->>API: not found
-    API-->>Client: 404 Not Found
-  else Place found
+    API->>Place: check_exists(place_id)
+    Place->>DB: SELECT place
+
+    alt Place not found
+        DB-->>Place: not found
+        Place-->>API: not found
+        API-->>Client: 404 Not Found
+    else Place found
     DB-->>Place: found
 
     API->>Review: check_already_reviewed(user_id, place_id)
