@@ -2,8 +2,8 @@
 
 sequenceDiagram
 autonumber
-participant Client as review (client) 
 
+participant Client as review 
 participant API as API/Facade
 participant User as User
 participant Place as Place
