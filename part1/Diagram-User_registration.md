@@ -19,16 +19,16 @@ autonumber
      User-->>API: False 
      API-->>Client: 400 Bad Request (Email already registered) 
  else Email is unique DB-->>User: Email not found 
-    User-->>API: True 
-    API->>User: create new User instance 
-    User->>User: hash_password(password) 
-    User->>BaseModel: Generate UUID (id) 
-    User->>BaseModel: Set created_at 
-    User->>BaseModel: Set updated_at 
-    User->>BaseModel: save() 
-    BaseModel->>DB: INSERT user 
-    DB-->>BaseModel: Success 
-    BaseModel->>BaseModel: to_dict() 
-    BaseModel-->>API: User data (dict) 
-    API-->>Client: 201 Created (user_data)
+     User-->>API: True 
+     API->>User: create new User instance 
+     User->>User: hash_password(password) 
+     User->>BaseModel: Generate UUID (id) 
+     User->>BaseModel: Set created_at 
+     User->>BaseModel: Set updated_at 
+     User->>BaseModel: save() 
+     BaseModel->>DB: INSERT user 
+     DB-->>BaseModel: Success 
+     BaseModel->>BaseModel: to_dict() 
+     BaseModel-->>API: User data (dict) 
+     API-->>Client: 201 Created (user_data)
 end
