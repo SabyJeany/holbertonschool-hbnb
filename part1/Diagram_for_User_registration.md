@@ -1,5 +1,6 @@
 ```mermaid
 sequenceDiagram
+autonumber
  participant Client as User (Client)
  participant API as API/Facade
  participant User as User Entity 
