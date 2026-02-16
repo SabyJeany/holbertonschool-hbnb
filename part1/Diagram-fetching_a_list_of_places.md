@@ -1,7 +1,7 @@
 ```mermaid
 sequenceDiagram
 autonumber
-    participant Client as User 
+    participant Client as User (client)
     participant API as API/Facade
     participant Place as Place Entity
     participant Review as Review Entity
