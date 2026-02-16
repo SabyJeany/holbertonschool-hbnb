@@ -172,42 +172,42 @@ autonumber
 
  Schéma
 ┌─────────────┐
-│ JEANY       │  "Je veux m'inscrire avec saby@example.com"
+│ JEANY       │  " saby@example.com"
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
-│   SERVEUR   │  "Attends, je vérifie si cet email existe déjà..."
+│   SERVEUR   │  " check if this email already exists..."
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
-│  BASE DE    │  "Je cherche saby@example.com..."
-│  DONNÉES    │  "Trouvé ! Marie utilise déjà cet email !"
+│  BASE DE    │  "database search saby@example.com..."
+│  DONNÉES    │  "Found, Another user is already using this email address. !"
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
-│   SERVEUR   │  "Désolé Jeany, cet email est déjà pris !"
+│   SERVEUR   │  " email is already taken!"
 └──────┬──────┘
        │
        ▼
 ┌─────────────┐
-│    JEANY    │  Reçoit : ❌ "Erreur 400 : Email déjà utilisé"
+│    JEANY    │  Reçoit : ❌ "Error 400 : Email already used"
 └─────────────┘
 
 
- 2) Création d’un lieu — POST /places
+ 2) Creating a location — POST /places
 
-Extraction user depuis token
+Extracting user from token
 
-Création du Place et rattachement à owner_id
+Creating a place and linking it to owner_id
 
-Validation prix / coordonnées
+Validating price/contact details
 
-Ajout amenities
+Add amenities
 
-Save + réponse JSON
+Save + response JSON
 
     ##sequenceDiagram##
 autonumber
@@ -310,13 +310,13 @@ autonumber
 
 
 
-4) Recherche de lieux — GET /places?max_price=...&amenities=...
+4) fetching of th place  — GET /places?max_price=...&amenities=...
 
-Filtres pour la Place
+Filters for the place
 
-ajouter des détails : rating moyen, amenities, reviews
+add détail : rating moyen, amenities, reviews
 
-Le confort : pour voir les équipements et services (Wi-Fi, piscine, etc.). 
+ comfort : pour voir les amenities et services (WiFi, pool, etc.). 
 
 
 sequenceDiagram
