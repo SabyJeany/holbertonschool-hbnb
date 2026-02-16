@@ -2,12 +2,12 @@
 sequenceDiagram
 autonumber
     participant Client as User (client)
-    participant API as API/Facade
-    participant Place as Place Entity
-    participant Review as Review Entity
-    participant Amenity as Amenity Entity
-    participant BaseModel as BaseModel
-    participant DB as Database
+    participant API as API/Facade(PersistenceLayer)
+    participant Place as Place Entity (BusinessLogicLayer)
+    participant Review as Review Entity (BusinessLogicLayer)
+    participant Amenity as Amenity Entity (BusinessLogicLayer)
+    participant BaseModel as BaseModel (BusinessLogicLayer)
+    participant DB as Database(PersistenceLayer)
 
     Client->>API: GET /places?max_price=250&amenities=Pool
     API->>API: Parse query parameters
