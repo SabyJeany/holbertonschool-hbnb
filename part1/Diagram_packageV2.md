@@ -19,7 +19,6 @@ classDiagram
     }
     
     class PersistenceLayer {
-        <<Repository>>
         +DatabaseAccess
         +FileStorage
     }
