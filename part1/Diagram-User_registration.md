@@ -9,7 +9,7 @@ autonumber
  participant DB as Database (PersistenceLayer)
 
  Client->>API: POST /register (email, password, first_name, last_name)
- API->>API: Validate input data
+ API->>DB: Validate input data
 
  API->>User: verify_email(email) 
  User->>DB: Check if email exists
