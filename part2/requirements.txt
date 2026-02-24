@@ -1,0 +1,3 @@
+# list of the python packages required to run the flask app
+flask
+flask-restx
