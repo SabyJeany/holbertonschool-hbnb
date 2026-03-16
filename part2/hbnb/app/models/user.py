@@ -1,5 +1,6 @@
 import re
 from app.models.base_model import BaseModel
+from app import bcrypt
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, password, is_admin=False):
@@ -36,7 +37,7 @@ class User(BaseModel):
         """
         if len(password) < 6:
             raise ValueError("Password must be at least 6 characters")
-        self._password = password
+        self._password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         """ 
@@ -44,7 +45,7 @@ class User(BaseModel):
         Returns:
             bool: True if they match, False otherwise.
         """
-        return self._password == password
+        return bcrypt.check_password_hash(self._password, password)
 
     @property
     def is_admin(self):
