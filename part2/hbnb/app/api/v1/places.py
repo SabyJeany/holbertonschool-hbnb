@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 """ 
 Namespace for place-related operations
@@ -26,6 +27,7 @@ class PlaceList(Resource):
     Handles operations on the collection of places.
     """
 
+    @jwt_required()
     @api.expect(place_model, validate=True)
     @api.response(201, 'Place created successfully')
     @api.response(400, 'Invalid input')
@@ -35,9 +37,12 @@ class PlaceList(Resource):
         Create a new place.
         Links the place to its owner and a list of amenities.
         """
+        current_user_id =  get_jwt_identity()
+
         try:
             place_data = api.payload
             amenity_ids = place_data.pop('amenities', [])
+            place_data['owner_id'] = current_user_id
             place = facade.create_place(place_data)
 
             for amenity_id in amenity_ids:
@@ -82,6 +87,7 @@ class PlaceResource(Resource):
         }
         return place_dict, 200
 
+    @jwt_required()  # Ensure the user is authenticated
     @api.expect(place_model, validate=False)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
@@ -90,9 +96,14 @@ class PlaceResource(Resource):
         Update a place's information.
         Note: Amenities updates are handled separately.
         """
+        current_user_id = get_jwt_identity()
+
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
+        
+        if place.owner.id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
         try:
             place_data = api.payload
             place_data.pop('amenities', None)
