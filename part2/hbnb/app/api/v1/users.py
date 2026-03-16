@@ -71,5 +71,11 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         
-        facade.update_user(user_id, api.payload)
+        data = api.payload
+
+        if 'password' in data:
+            """ If a new password is sent, it is hashed first"""
+            user.hash_password(data.pop('password'))
+
+        facade.update_user(user_id, data)
         return facade.get_user(user_id).to_dict(), 200
