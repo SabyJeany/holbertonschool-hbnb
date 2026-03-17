@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 
 """ 
 Namespace for place-related operations
@@ -97,12 +97,14 @@ class PlaceResource(Resource):
         Note: Amenities updates are handled separately.
         """
         current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
 
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
         
-        if place.owner.id != current_user_id:
+        if not is_admin and place.owner.id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
         try:
             place_data = api.payload
