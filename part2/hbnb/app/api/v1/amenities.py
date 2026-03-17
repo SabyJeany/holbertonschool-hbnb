@@ -1,3 +1,4 @@
+from flask_jwt_extended import get_jwt, jwt_required
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -14,6 +15,7 @@ class AmenityList(Resource):
     Allows listing all amenities or creating a new one.
     """
 
+    @jwt_required()
     @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity created successfully')
     @api.response(400, 'Invalid input')
@@ -22,6 +24,10 @@ class AmenityList(Resource):
         Create a new amenity.
         Uses the facade to validate and store the amenity.
         """
+        claims = get_jwt()
+        if not claims.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+        
         try:
             amenity = facade.create_amenity(api.payload)
             return amenity.to_dict(), 201
@@ -54,6 +60,7 @@ class AmenityResource(Resource):
             return {'error': 'Amenity not found'}, 404
         return amenity.to_dict(), 200
 
+    @jwt_required()
     @api.expect(amenity_model, validate=False)
     @api.response(200, 'Amenity updated')
     @api.response(404, 'Amenity not found')
@@ -63,6 +70,10 @@ class AmenityResource(Resource):
         Update an amenity's information.
         Catches ValueErrors if the new name violates validation rules.
         """
+        claims = get_jwt()
+        if not claims.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+        
         amenity = facade.get_amenity(amenity_id)
         if not amenity:
             return {'error': 'Amenity not found'}, 404
