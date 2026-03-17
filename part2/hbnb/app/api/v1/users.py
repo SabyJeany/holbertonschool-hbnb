@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 
 api = Namespace('users', description='User operations')
 
@@ -18,6 +18,7 @@ class UserList(Resource):
     or creating a new user instance.
     """
 
+    @jwt_required()  # Ensure the user is authenticated before allowing user creation
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created successfully')
     @api.response(400, 'Email already registered')
@@ -26,6 +27,10 @@ class UserList(Resource):
         Register a new user.
         Validates the input data and ensures the email is unique via the Facade.
         """
+        claims = get_jwt()
+        if not claims.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
+        
         user_data = api.payload
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
@@ -69,15 +74,29 @@ class UserResource(Resource):
         Update an existing user's profile.
         Partial updates are allowed as validation is set to False for this model.
         """
+        claims = get_jwt()
         current_user_id = get_jwt_identity()
+        is_admin = claims.get('is_admin', False)
 
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        
+        # Admin path — can modify everything
+        if is_admin:
+            data = api.payload
+            if 'email' in data:
+                existing = facade.get_user_by_email(data['email'])
+                if existing and existing.id != user_id:
+                    return {'error': 'Email already in use'}, 400
+            if 'password' in data:
+                user.hash_password(data.pop('password'))
+            facade.update_user(user_id, data)
+            return facade.get_user(user_id).to_dict(), 200
+    
+        # Regular user path — can only modify their own profile, and not email/password
         if current_user_id != user_id:
             return {'error': 'Unauthorized action'}, 403
-        
+
         data = api.payload
 
         if 'email' in data or 'password' in data:
