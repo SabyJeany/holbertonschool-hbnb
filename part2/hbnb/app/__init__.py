@@ -13,7 +13,22 @@ def create_app(config_class="config.DevelopmentConfig"):
     bcrypt.init_app(app)
     jwt.init_app(app)
 
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/api/v1/')
+    api = Api(
+        app, 
+        version='1.0',
+        title='HBnB API',
+        description='HBnB Application API',
+        doc='/api/v1/',
+        authorizations={
+            'Bearer': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'Authorization',
+                'description': 'Ajoute: Bearer <ton_token>'
+            }
+        },
+                security='Bearer'
+    )
 
     from app.api.v1.users import api as users_ns
     from app.api.v1.amenities import api as amenities_ns
