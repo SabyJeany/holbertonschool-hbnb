@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from app import db
 
 class Repository(ABC):
     """
@@ -73,3 +74,54 @@ class InMemoryRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
+
+class SQLAlchemyRepository(Repository):
+    """"
+    Repository that stores data in a real SQLite database using SQLAlchemy.
+    Replaces InMemoryRepository — data is now saved even after server restart.
+    """
+
+    def __init__(self, model):
+        """
+        Args:
+            model: the SQLAlchemy model class to use (ex: User, Place, Review...)
+        """
+        self.model = model
+
+    def add(self, obj):
+            """Adds a new object to the database and save the transaction."""
+            db.session.add(obj)
+            db.session.commit()
+
+    def get(self, obj_id):
+        """Returns the object with the given ID, or None if not found."""
+        return db.session.get(self.model, obj_id)
+    
+    def get_all(self):
+        """Returns a list of all objects of this model in the database."""
+        return self.model.query.all()
+    
+    def update(self, obj_id, data):
+        """
+        Updates an existing object with the given data distionary.
+        Only modifies the fields present in the data.
+        """
+        obj = self.get(obj_id)
+        if obj:
+            for key, value in data.items():
+                setattr(obj, key, value)
+            db.session.commit()
+
+    def delete(self, obj_id):
+        """Removes the object with the given ID from the database."""
+        obj = self.get(obj_id)
+        if obj:
+            db.session.delete(obj)
+            db.session.commit()
+            
+    def get_by_attribute(self, attr_name, attr_value):
+        """
+        returns the first object where attr_name == attr_value.
+        example: get_by_attribute('email', 'jeany@saby.com')
+        """
+        return self.model.query.filter_by(**{attr_name: attr_value}).first()
