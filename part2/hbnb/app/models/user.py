@@ -1,64 +1,37 @@
-import re
+from app import db, bcrypt
 from app.models.base_model import BaseModel
-from app import bcrypt
+from sqlalchemy.orm import validates
+import re
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
-        super().__init__()
-        self.first_name = first_name
-        self.last_name = last_name
-        self._email = None
-        self._password = None
-        self._is_admin = is_admin
-        self.verify_email(email)
-        self.hash_password(password)
+    __tablename__ = 'users'
 
-    def verify_email(self, email):
-        """ Check that the email is correctly formatted according to the regex, and if it is, save it in _email.
-    Args: 
-    - email (str): The email address to validate.
-    Raises:
-    - ValueError: If the email format is not invalid."""
-        
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name  = db.Column(db.String(50), nullable=False)
+    email      = db.Column(db.String(120), nullable=False, unique=True)
+    password   = db.Column(db.String(128), nullable=False)
+    is_admin   = db.Column(db.Boolean, default=False)
+
+    @validates('email')
+    def validate_email(self, key, email):
+        """Validates email format before storing."""
         regex_email = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         if not re.match(regex_email, email):
             raise ValueError(f"Invalid email: {email}")
-        self._email = email
-
-    @property
-    def email(self):
-        return self._email
+        return email
 
     def hash_password(self, password):
-        """
-        checks the strength of the password and prepares it for hashing.
-        Raises:
-            ValueError: If the password is less than 6 characters long.
-        """
+        """Hash the password before storing it."""
         if len(password) < 6:
             raise ValueError("Password must be at least 6 characters")
-        self._password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """ 
-        Compares the provided password with the stored password. 
-        Returns:
-            bool: True if they match, False otherwise.
-        """
-        return bcrypt.check_password_hash(self._password, password)
-
-    @property
-    def is_admin(self):
-        """ indicates whether the user has administrative privileges. """
-        return self._is_admin
+        """Verify the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
 
     def get_average_rating(self, reviews):
-        """
-        Calculate the average rating from a list of reviews.
-        Args:            reviews (list): A list of review objects, containing a 'rating' attribute.
-        Returns:
-            float: The average rating, or 0.0 if the list is empty.
-        """
+        """Calculate the average rating from a list of reviews."""
         if not reviews:
             return 0.0
         return sum(r.rating for r in reviews) / len(reviews)
