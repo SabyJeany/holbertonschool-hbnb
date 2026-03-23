@@ -1,4 +1,4 @@
-from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
@@ -14,10 +14,10 @@ class HBnBFacade:
         """
         Initializes the in-memory repositories for each entity type.
         """
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository()
+        self.place_repo = SQLAlchemyRepository()
+        self.review_repo = SQLAlchemyRepository()
+        self.amenity_repo = SQLAlchemyRepository()
 
     def create_user(self, user_data):
         """
