@@ -1,4 +1,6 @@
 from app.models.base_model import BaseModel
+from app import db
+from sqlalchemy.orm import validates
 
 class Place(BaseModel):
     """
@@ -6,30 +8,33 @@ class Place(BaseModel):
     Manages location information, pricing, and relationships with reviews and amenities.
     
     """
+    __tablename__ = 'places'
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500), nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
 
-    def __init__(self, title, description, price, latitude, longitude, owner):
-        """
-        Initialises a new location.
-        
-        Args:
-            title (str): Title of the listing.
-            description (str): Detailed description.
-            price (float): Price per night.
-            latitude (float): Geographic latitude.
-            longitude (float): Geographic longitude.
-            owner (User): Instance of the user who owns the location.
-        """
-        super().__init__()
-        self.title = title
-        self.description = description
-        self._price = None
-        self._latitude = None
-        self._longitude = None
-        self.owner = owner
-        self.reviews = []       
-        self.amenities = []
-        self.set_price(price)
-        self._validate_coordinates(latitude, longitude)
+    @validates('price')
+    def validate_price(self, key, price):
+        """Validates that the price is a positive number."""
+        if price < 0:
+            raise ValueError("Price must be positive")
+        return price
+    
+    @validates('longitude')
+    def validate_longitude(self, key, longitude):
+        """Validates that the longitude is between -180 and 180."""
+        if not (-180 <= longitude <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        return longitude
+
+    @validates('latitude')
+    def validate_latitude(self, key, latitude):
+        """Validates that the latitude is between -90 and 90."""
+        if not (-90 <= latitude <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        return latitude
 
     def set_price(self, price):
         """
