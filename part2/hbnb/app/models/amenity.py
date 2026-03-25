@@ -1,36 +1,22 @@
+from app import db
 from app.models.base_model import BaseModel
+from sqlalchemy.orm import validates
 
 class Amenity(BaseModel):
-    """
-    Represents an amenity or an service available at a place, such as (Wi-Fi, pool).
-    """
-    def __init__(self, name: str):
-        """
-        Initializes a new amenity.
-        Args:
-            name (str): The name of the amenity, (ex: "Wifi").
-        """
-        super().__init__()
-        self._name = None
-        self.name = name
+    """Represents an amenity available at a place (Wi-Fi, pool...)."""
+    __tablename__ = 'amenities'
 
-    @property
-    def name(self):
-        """Returns the name of the amenity."""
-        return self._name
-    
-    @name.setter
-    def name(self,name):
-        """defines the name of the amenity with validation.
-        Raises:
-            ValueError: If the name is empty or exceeds 50 characters.
-        """
+    name = db.Column(db.String(50), nullable=False)
+
+    @validates('name')
+    def validate_name(self, key, name):
+        """Name must not be empty and max 50 characters."""
         if not name or len(name) > 50:
             raise ValueError("Amenity name required, max 50 characters")
-        self._name = name
+        return name
 
     def to_dict(self):
-        """Converts the Amenity object into a dictionary format."""
+        """Converts the Amenity object into a dictionary."""
         base = super().to_dict()
         base.update({'name': self.name})
         return base
