@@ -2,6 +2,11 @@ from app.models.base_model import BaseModel
 from app import db
 from sqlalchemy.orm import validates
 
+#  Many-to-many Place association table ↔ Amenity
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+)
 class Place(BaseModel):
     """
     Represents a property or location in the system.
@@ -14,7 +19,15 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+    # Foreign key to the User
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
+    # Relationships
+    owner     = db.relationship('User', backref=db.backref('places', lazy=True))
+    reviews   = db.relationship('Review', backref=db.backref('place', lazy=True))
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                                backref=db.backref('places', lazy=True))
+    
     @validates('price')
     def validate_price(self, key, price):
         """Validates that the price is a positive number."""
@@ -35,70 +48,7 @@ class Place(BaseModel):
         if not (-90 <= latitude <= 90):
             raise ValueError("Latitude must be between -90 and 90")
         return latitude
-
-    def set_price(self, price):
-        """
-        Sets the price after validation. 
-        
-        Raises:
-            ValueError: if the price is negative.
-        """
-        if price < 0:
-            raise ValueError("Price must be positive")
-        self._price = price
-
-    def get_price(self):
-        """Returns the actual price of the place."""
-        return self._price
-
-    def _validate_coordinates(self, latitude, longitude):
-        """
-        Internal method to validate GPS coordinates.
-        
-        Raises:
-            ValueError: If the latitude or longitude are out of bounds.
-        """
-        if not (-90 <= latitude <= 90):
-            raise ValueError("Latitude must be between -90 and 90")
-        if not (-180 <= longitude <= 180):
-            raise ValueError("Longitude must be between -180 and 180")
-        self._latitude = latitude
-        self._longitude = longitude
-
-    def is_available(self):
-        """Checks if the place is available for booking ( Default True )."""
-        return True
-
-    def add_amenity(self, amenity):
-        """
-        Adds an amenity to the place if it is not already present.
-        
-        Args:
-            amenity (Amenity): The amenity object to add.
-        """
-        if amenity not in self.amenities:
-            self.amenities.append(amenity)
-
-    def remove_amenity(self, amenity):
-        """Deletes an amenity from the place if it exists."""
-        if amenity in self.amenities:
-            self.amenities.remove(amenity)
-
-    def add_review(self, review):
-        """Add a customer review to the list of reviews for this place."""
-        self.reviews.append(review)
-
-    def get_average_rating(self):
-        """
-        Calculates the average rating for this place.
-        
-        Returns:
-            float: Average rating or 0.0 if no reviews exist.
-        """
-        if not self.reviews:
-            return 0.0
-        return sum(r.rating for r in self.reviews) / len(self.reviews)
-
+    
     def to_dict(self):
         """
         Converts the Place object and its relationships into a dictionary.
@@ -110,10 +60,10 @@ class Place(BaseModel):
         base.update({
             'title': self.title,
             'description': self.description,
-            'price': self._price,
-            'latitude': self._latitude,
-            'longitude': self._longitude,
-            'owner_id': self.owner.id,
+            'price': self.price,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'owner_id': self.owner_id,
             'amenities': [a.to_dict() for a in self.amenities]
         })
         return base
