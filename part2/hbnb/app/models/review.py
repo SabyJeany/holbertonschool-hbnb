@@ -13,6 +13,12 @@ class Review(BaseModel):
     text = db.Column(db.String(500), nullable=False)
     _rating = db.Column(db.Integer, nullable=False)
 
+    # Foreign keys
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+    user_id  = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
+    # Relationships
+    user = db.relationship('User', backref=db.backref('reviews', lazy=True))
 
     @validates('_rating')
     def validate_rating(self, key, rating):
@@ -30,5 +36,7 @@ class Review(BaseModel):
         base.update({
             'text': self.text,
             'rating': self.rating,
+            'place_id': self.place_id,
+            'user_id': self.user_id
          })
         return base
