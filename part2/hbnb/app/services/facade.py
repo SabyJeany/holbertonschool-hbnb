@@ -90,7 +90,7 @@ class HBnBFacade:
             price=place_data['price'],
             latitude=place_data['latitude'],
             longitude=place_data['longitude'],
-            owner=owner
+            owner_id=place_data['owner_id']
         )
         self.place_repo.add(place)
         return place
@@ -128,11 +128,10 @@ class HBnBFacade:
         review = Review(
             text=review_data['text'],
             rating=review_data['rating'],
-            place=place,
-            user=user
+            place_id=review_data['place_id'],
+            user_id=review_data['user_id']
         )
         self.review_repo.add(review)
-        place.add_review(review)
         return review
 
     def get_review(self, review_id):
@@ -145,7 +144,7 @@ class HBnBFacade:
 
     def get_reviews_by_place(self, place_id):
         """Filters reviews to return only those linked to a specific place."""
-        return [r for r in self.review_repo.get_all() if r.place.id == place_id]
+        return [r for r in self.review_repo.get_all() if r.place_id == place_id]
 
     def update_review(self, review_id, review_data):
         """Updates an existing review's text or rating."""
