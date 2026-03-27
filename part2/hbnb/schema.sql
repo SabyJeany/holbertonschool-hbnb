@@ -1,7 +1,7 @@
 -- schema.sql
 
--- Table User
-CREATE TABLE IF NOT EXISTS User (
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
     id          CHAR(36) PRIMARY KEY,
     first_name  VARCHAR(255) NOT NULL,
     last_name   VARCHAR(255) NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS User (
     is_admin    BOOLEAN DEFAULT FALSE
 );
 
--- Table Place
-CREATE TABLE IF NOT EXISTS Place (
+-- Places table
+CREATE TABLE IF NOT EXISTS places (
     id          CHAR(36) PRIMARY KEY,
     title       VARCHAR(255) NOT NULL,
     description TEXT,
@@ -19,32 +19,32 @@ CREATE TABLE IF NOT EXISTS Place (
     latitude    FLOAT NOT NULL,
     longitude   FLOAT NOT NULL,
     owner_id    CHAR(36) NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES User(id)
+    FOREIGN KEY (owner_id) REFERENCES users(id)  -- ← users minuscule
 );
 
--- Table Review
-CREATE TABLE IF NOT EXISTS Review (
+-- Reviews table
+CREATE TABLE IF NOT EXISTS reviews (
     id          CHAR(36) PRIMARY KEY,
     text        TEXT NOT NULL,
     rating      INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     user_id     CHAR(36) NOT NULL,
     place_id    CHAR(36) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (place_id) REFERENCES Place(id),
-    UNIQUE (user_id, place_id)  -- One review per user per place
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (place_id) REFERENCES places(id),  -- ← places minuscule
+    UNIQUE (user_id, place_id)
 );
 
--- Table Amenity
-CREATE TABLE IF NOT EXISTS Amenity (
+-- Amenities table
+CREATE TABLE IF NOT EXISTS amenities (
     id   CHAR(36) PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL
 );
 
--- Table Place_Amenity (many-to-many)
-CREATE TABLE IF NOT EXISTS Place_Amenity (
+-- Place_amenity table (many-to-many)
+CREATE TABLE IF NOT EXISTS place_amenity (
     place_id    CHAR(36) NOT NULL,
     amenity_id  CHAR(36) NOT NULL,
     PRIMARY KEY (place_id, amenity_id),
-    FOREIGN KEY (place_id) REFERENCES Place(id),
-    FOREIGN KEY (amenity_id) REFERENCES Amenity(id)
+    FOREIGN KEY (place_id) REFERENCES places(id),
+    FOREIGN KEY (amenity_id) REFERENCES amenities(id)
 );
