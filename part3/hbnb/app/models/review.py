@@ -11,7 +11,7 @@ class Review(BaseModel):
     """
     __tablename__ = 'reviews'
     text = db.Column(db.String(500), nullable=False)
-    _rating = db.Column(db.Integer, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
 
     # Foreign keys
     place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
@@ -20,7 +20,7 @@ class Review(BaseModel):
     # Relationships
     user = db.relationship('User', backref=db.backref('reviews', lazy=True))
 
-    @validates('_rating')
+    @validates('rating')
     def validate_rating(self, key, rating):
         """Validates that the rating is an integer between 1 and 5."""
         if not (1 <= rating <= 5):
