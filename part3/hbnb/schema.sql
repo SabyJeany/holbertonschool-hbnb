@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS places (
     latitude    FLOAT NOT NULL,
     longitude   FLOAT NOT NULL,
     owner_id    CHAR(36) NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES users(id)  -- ← users minuscule
+    FOREIGN KEY (owner_id) REFERENCES users(id)
 );
 
 -- Reviews table
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     user_id     CHAR(36) NOT NULL,
     place_id    CHAR(36) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (place_id) REFERENCES places(id),  -- ← places minuscule
+    FOREIGN KEY (place_id) REFERENCES places(id),
     UNIQUE (user_id, place_id)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS amenities (
     name VARCHAR(255) UNIQUE NOT NULL
 );
 
--- Place_amenity table (many-to-many)
+-- Place_amenity table
 CREATE TABLE IF NOT EXISTS place_amenity (
     place_id    CHAR(36) NOT NULL,
     amenity_id  CHAR(36) NOT NULL,
