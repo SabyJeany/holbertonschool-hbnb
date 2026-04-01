@@ -36,8 +36,11 @@ class UserList(Resource):
         if existing_user:
             return {'error': 'Email already registered'}, 400
         
-        user = facade.create_user(user_data)
-        return user.to_dict(), 201
+        try:
+            user = facade.create_user(user_data)
+            return user.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 400
 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
