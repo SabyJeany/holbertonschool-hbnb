@@ -24,3 +24,6 @@ Thumbs.db
 
 #Logs
 log
+
+#personnal initial scripts
+create_admin.py
