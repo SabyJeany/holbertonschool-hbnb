@@ -5,6 +5,7 @@ from app.models.review import Review
 from app.models.amenity import Amenity
 from app.services.repositories.user_repository import UserRepository
 
+
 class HBnBFacade:
     """
     Facade class that bridges the presentation layer (API) with the business logic 
@@ -29,8 +30,10 @@ class HBnBFacade:
         Returns:
             User: The newly created User object.
         """
-        user = User(**user_data)
-        user.hash_password(user_data['password'])
+        data = user_data.copy() # Avoid mutating the original input
+        password = data.pop('password')
+        user = User(**data)
+        user.hash_password(password)
         self.user_repo.add(user)
         return user
 
