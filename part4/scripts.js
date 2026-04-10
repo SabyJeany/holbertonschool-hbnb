@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const placesList = document.getElementById('places-list');
     if (placesList) {
         const token = checkAuth();
-        const images = ['house1.jpg', 'house2.jpg','house3.jpg','house5.jpg'];
+        const images = ['images/house1.jpg', 'images/house2.jpg','images/house3.jpg','images/house5.jpg'];
 
         fetch('http://127.0.0.1:5000/api/v1/places/', {
             method: 'GET',
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(place => {
                 placeDetails.innerHTML = `
-                    <img src="house1.jpg" alt="${place.title}" style="width:100%; height:300px; object-fit:cover; border-radius:10px 10px 0 0;">
+                    <img src="images/house1.jpg" alt="${place.title}" style="width:100%; height:300px; object-fit:cover; border-radius:10px 10px 0 0;">
                     <div class="place-info">
                         <h2>${place.title}</h2>
                         <p><strong>Host:</strong> ${place.owner ? place.owner.first_name + ' ' + place.owner.last_name : 'Unknown'}</p>
