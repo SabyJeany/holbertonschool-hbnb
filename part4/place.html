@@ -37,10 +37,19 @@
 
         <section id="add-review">
             <h2>Add a Review</h2>
-            <form id="review-form" class="add-review form">
+            <form id="place-review-form" class="add-review form">
                 <label for="review-text">Review:</label>
                 <textarea id="review-text" name="review-text" required></textarea>
-                
+
+                <label for="review-rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="1">1 - Poor</option>
+                    <option value="2">2 - Fair</option>
+                    <option value="3">3 - Good</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="5">5 - Excellent</option>
+                </select>
+
                 <button type="submit">Submit</button>
             </form>
         </section>
